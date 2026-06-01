@@ -1,0 +1,754 @@
+/* ============================================================
+   Calculadora Comprar vs Arrendar — Estilos
+   Estética: editorial financiero, cálido, restraint, serio
+   ============================================================ */
+
+/* ----------------------------------------------------------------
+   1. TOKENS — variables CSS para temas (light/dark)
+---------------------------------------------------------------- */
+:root {
+  /* Indica al navegador el esquema activo → scrollbars y controles nativos matchean (cross-browser) */
+  color-scheme: light;
+
+  /* Colores base — modo claro (Slate & Teal) */
+  --bg-page: #f1f5f9;
+  --bg-surface: #f8fafc;
+  --bg-surface-2: #e2e8f0;
+  --bg-card: #ffffff;
+
+  /* Tinta */
+  --ink-primary: #0f172a;
+  --ink-secondary: #475569;
+  --ink-tertiary: #94a3b8;
+  --ink-rule: #e2e8f0;
+
+  /* Acento — Slate & Teal. green=teal (comprar), navy=índigo (arrendar+ETF), coral=naranja (intereses) */
+  --accent-green: #0d9488;
+  --accent-green-soft: #ccfbf1;
+  --accent-coral: #f97316;
+  --accent-coral-soft: #ffedd5;
+  --accent-navy: #4f46e5;
+  --accent-amber: #d97706;
+  --accent-warning: #ea580c;
+
+  /* Estados de output */
+  --positive: #0d9488;
+  --negative: #f97316;
+
+  /* Tipografía */
+  --font-display: 'Fraunces', 'Georgia', serif;
+  --font-sans: 'Manrope', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Menlo', monospace;
+
+  /* Layout */
+  --max-width: 1280px;
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Scrollbars y controles nativos en oscuro, automáticamente */
+    color-scheme: dark;
+
+    /* Fondos gris NEUTRO (sin tinte azulado), más oscuros */
+    --bg-page: #0a0a0a;
+    --bg-surface: #171717;
+    --bg-surface-2: #262626;
+    --bg-card: #171717;
+
+    --ink-primary: #f5f5f5;
+    --ink-secondary: #a3a3a3;
+    --ink-tertiary: #6b6b6b;
+    --ink-rule: #2a2a2a;
+
+    /* Acentos sin cambios (teal/índigo/naranja/amber) */
+    --accent-green: #2dd4bf;
+    --accent-green-soft: #134e4a;
+    --accent-coral: #fb923c;
+    --accent-coral-soft: #7c2d12;
+    --accent-navy: #818cf8;
+    --accent-amber: #fbbf24;
+    --accent-warning: #fb923c;
+
+    --positive: #2dd4bf;
+    --negative: #fb923c;
+  }
+}
+
+/* ----------------------------------------------------------------
+   2. RESET y base
+---------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; tab-size: 4; }
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink-primary);
+  background: var(--bg-page);
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4 { margin: 0; font-weight: 500; line-height: 1.2; }
+p { margin: 0; }
+button { font: inherit; cursor: pointer; }
+
+/* ----------------------------------------------------------------
+   3. LAYOUT — container y grid principal
+---------------------------------------------------------------- */
+.container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.main-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 380px) minmax(0, 1fr);
+  gap: 2.5rem;
+  padding-top: 2.5rem;
+  padding-bottom: 4rem;
+}
+
+@media (max-width: 960px) {
+  .main-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+/* ----------------------------------------------------------------
+   4. HEADER — masthead estilo periódico
+---------------------------------------------------------------- */
+.site-header {
+  border-bottom: 1px solid var(--ink-rule);
+  background: var(--bg-surface);
+  padding: 0.9rem 0;
+}
+
+.masthead__title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  margin: 0;
+}
+.masthead__title em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--accent-coral);
+}
+
+/* ----------------------------------------------------------------
+   5. PANEL DE CONTROLES (izquierda)
+---------------------------------------------------------------- */
+.panel--controls {
+  position: sticky;
+  top: 1rem;
+  align-self: start;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+@media (max-width: 960px) {
+  .panel--controls { position: static; max-height: none; overflow: visible; }
+}
+
+.panel__label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-tertiary);
+  margin-bottom: 0.75rem;
+}
+
+.presets { margin-bottom: 2rem; }
+.presets__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.preset-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 10px 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--ink-rule);
+  border-radius: var(--radius-md);
+  text-align: left;
+  transition: background 0.12s, border-color 0.12s;
+}
+.preset-btn:hover {
+  background: var(--bg-surface-2);
+  border-color: var(--ink-secondary);
+}
+.preset-btn:active { transform: scale(0.985); }
+.preset-btn.is-active {
+  background: var(--accent-green-soft);
+  border-color: var(--accent-green);
+}
+.preset-btn__name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-primary);
+}
+.preset-btn__rate {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-secondary);
+}
+
+.control-group {
+  border-top: 1px solid var(--ink-rule);
+  padding-top: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.reset-btn {
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 10px 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--ink-rule);
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-secondary);
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+.reset-btn:hover {
+  background: var(--bg-surface-2);
+  border-color: var(--accent-coral);
+  color: var(--accent-coral);
+}
+.control-group__title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 500;
+  font-style: italic;
+  margin-bottom: 1.25rem;
+  color: var(--ink-primary);
+}
+
+.control { margin-bottom: 1.25rem; }
+.control__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+.control__head label {
+  font-size: 13px;
+  color: var(--ink-secondary);
+}
+.control__head output {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-primary);
+  font-variant-numeric: tabular-nums;
+}
+.control__hint {
+  font-size: 11.5px;
+  color: var(--ink-tertiary);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* ----------------------------------------------------------------
+   5b. MODE TABS — selector modo de inversión ETF
+---------------------------------------------------------------- */
+.mode-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  background: var(--bg-surface);
+  border: 1px solid var(--ink-rule);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  margin-bottom: 0.5rem;
+}
+.mode-tab {
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-secondary);
+  letter-spacing: 0.02em;
+  transition: background 0.12s, color 0.12s;
+}
+.mode-tab:hover { color: var(--ink-primary); }
+.mode-tab.is-active {
+  background: var(--accent-green-soft);
+  color: var(--accent-green);
+}
+.mode-tabs__hint {
+  font-size: 11.5px;
+  color: var(--ink-tertiary);
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+.mode-tabs__hint strong {
+  color: var(--ink-secondary);
+  font-weight: 600;
+}
+
+/* Toggle (cuota inicial al ETF) */
+.toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 0.5rem;
+  padding: 10px 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--ink-rule);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+.toggle:hover { background: var(--bg-surface-2); }
+.toggle input[type="checkbox"] {
+  margin: 2px 0 0 0;
+  accent-color: var(--accent-green);
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+.toggle__label {
+  font-size: 13px;
+  color: var(--ink-primary);
+  line-height: 1.4;
+}
+
+/* Visibility por modo */
+.panel--controls[data-mode="diferencia"] [data-mode-only="aporte-fijo"] { display: none; }
+.panel--controls[data-mode="aporte-fijo"] [data-mode-only="diferencia"] { display: none; }
+
+/* ----------------------------------------------------------------
+   6. SLIDERS — input range custom
+---------------------------------------------------------------- */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: var(--ink-rule);
+  border-radius: 2px;
+  outline: none;
+  margin: 0;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--ink-primary);
+  border-radius: 50%;
+  cursor: grab;
+  transition: transform 0.1s;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--ink-primary);
+  border-radius: 50%;
+  cursor: grab;
+}
+input[type="range"]:focus::-webkit-slider-thumb,
+input[type="range"]:hover::-webkit-slider-thumb {
+  transform: scale(1.15);
+}
+input[type="range"]:active::-webkit-slider-thumb { cursor: grabbing; }
+input[type="range"]:focus { outline: none; }
+
+/* ----------------------------------------------------------------
+   7. PANEL DE RESULTADOS (derecha)
+---------------------------------------------------------------- */
+.panel--results { min-width: 0; }
+
+/* Veredicto — comparación dual objetiva (fondo neutro, sin bueno/malo) */
+.verdict {
+  background: var(--bg-card);
+  border: 1px solid var(--ink-rule);
+  border-radius: var(--radius-lg);
+  padding: 1.1rem 1.4rem;
+  margin-bottom: 12px;
+}
+.verdict__label {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-tertiary);
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+.verdict__compare {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.verdict__side { display: flex; flex-direction: column; gap: 2px; }
+.verdict__side--arr { text-align: right; }
+.verdict__name {
+  font-size: 12px;
+  color: var(--ink-secondary);
+  font-weight: 500;
+}
+.verdict__val {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+.verdict__side--compra .verdict__val { color: var(--accent-green); }
+.verdict__side--arr .verdict__val { color: var(--accent-navy); }
+.verdict__bar {
+  display: flex;
+  gap: 3px;
+  height: 10px;
+  margin: 0.75rem 0;
+}
+.verdict__bar-seg {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+  min-width: 2px;
+}
+.verdict__bar-seg--compra { background: var(--accent-green); }
+.verdict__bar-seg--arr { background: var(--accent-navy); }
+.verdict__result {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--ink-primary);
+  text-align: center;
+}
+
+/* Scorecard — dos columnas comparativas */
+.scorecard {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.scorecard__col {
+  background: var(--bg-card);
+  border: 1px solid var(--ink-rule);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.25rem;
+}
+.scorecard__head {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 500;
+  font-style: italic;
+  color: var(--ink-primary);
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--ink-rule);
+}
+.scorecard__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  padding: 5px 0;
+}
+.scorecard__k {
+  font-size: 12.5px;
+  color: var(--ink-secondary);
+}
+.scorecard__v {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-primary);
+  text-align: right;
+}
+
+/* Tira de detalles secundarios */
+.details-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 2.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--ink-rule);
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  color: var(--ink-tertiary);
+}
+.details-strip__item { display: inline-flex; gap: 6px; align-items: baseline; }
+.details-strip__item strong {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--ink-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 480px) {
+  .scorecard { grid-template-columns: 1fr; }
+}
+
+/* Goal-seek — sensibilidad / puntos de quiebre */
+.goalseek {
+  background: var(--bg-surface-2);
+  border-left: 3px solid var(--accent-navy);
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  padding: 1.1rem 1.4rem;
+  margin-bottom: 2.5rem;
+}
+.goalseek__eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-navy);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+.goalseek__header {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--ink-primary);
+  margin-bottom: 0.75rem;
+}
+.goalseek__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.goalseek__list li {
+  font-size: 13px;
+  color: var(--ink-secondary);
+  padding-left: 1rem;
+  position: relative;
+}
+.goalseek__list li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--accent-navy);
+}
+.goalseek__list strong {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--ink-primary);
+  font-variant-numeric: tabular-nums;
+}
+.goalseek__now { color: var(--ink-tertiary); font-size: 12px; }
+.goalseek__item--flat { color: var(--ink-tertiary); font-style: italic; }
+
+/* Plan de pagos — tabla de amortización colapsable */
+.schedule {
+  margin-bottom: 2.5rem;
+  border: 1px solid var(--ink-rule);
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+}
+.schedule__summary {
+  cursor: pointer;
+  padding: 1rem 1.25rem;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 500;
+  font-style: italic;
+  color: var(--ink-primary);
+  list-style: none;
+}
+.schedule__summary::-webkit-details-marker { display: none; }
+.schedule__summary::before { content: '▸ '; color: var(--accent-navy); }
+.schedule[open] .schedule__summary::before { content: '▾ '; }
+.schedule__actions {
+  padding: 0 1.25rem 0.75rem;
+}
+.schedule__csv {
+  background: var(--bg-surface);
+  border: 1px solid var(--ink-rule);
+  border-radius: var(--radius-md);
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-primary);
+  transition: background 0.12s, border-color 0.12s;
+}
+.schedule__csv:hover { background: var(--bg-surface-2); border-color: var(--ink-secondary); }
+.schedule__wrap {
+  max-height: 420px;
+  overflow: auto;
+  border-top: 1px solid var(--ink-rule);
+}
+.schedule__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+}
+.schedule__table th {
+  position: sticky;
+  top: 0;
+  background: var(--bg-surface-2);
+  color: var(--ink-secondary);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 11px;
+  text-align: right;
+  padding: 8px 10px;
+  white-space: nowrap;
+}
+.schedule__table th:first-child,
+.schedule__table td:first-child { text-align: center; }
+.schedule__table td {
+  text-align: right;
+  padding: 5px 10px;
+  color: var(--ink-primary);
+  border-top: 1px solid var(--ink-rule);
+  white-space: nowrap;
+}
+.schedule__table tbody tr:nth-child(even) { background: var(--bg-surface); }
+.schedule__table tfoot td {
+  position: sticky;
+  bottom: 0;
+  background: var(--bg-surface-2);
+  border-top: 2px solid var(--ink-secondary);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  color: var(--ink-primary);
+}
+
+/* Charts */
+.chart-figure {
+  margin: 0 0 2rem;
+}
+.chart-figure figcaption { margin-bottom: 1rem; }
+
+.chart__eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-tertiary);
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+.chart__title {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.75rem;
+}
+
+.chart-wrap {
+  position: relative;
+  width: 100%;
+  height: 240px;
+  background: var(--bg-card);
+  border: 1px solid var(--ink-rule);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+}
+.chart-wrap--tall { height: 320px; }
+
+.chart-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-size: 12px;
+  color: var(--ink-secondary);
+}
+.legend__item { display: flex; align-items: center; gap: 6px; }
+.swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+.swatch--green { background: var(--accent-green); }
+.swatch--blue { background: var(--accent-navy); }
+.swatch--coral { background: var(--accent-coral); }
+.swatch--navy { background: var(--accent-navy); height: 2px; border-radius: 0; }
+.swatch--amber { background: var(--accent-amber); height: 2px; border-radius: 0; }
+.swatch--dashed {
+  background: repeating-linear-gradient(90deg, currentColor 0 4px, transparent 4px 8px);
+  background-color: transparent !important;
+  height: 2px;
+  width: 16px;
+  border-radius: 0;
+}
+.swatch--blue.swatch--dashed { color: var(--accent-navy); }
+.swatch--navy.swatch--dashed { color: var(--accent-navy); }
+.swatch--amber.swatch--dashed { color: var(--accent-amber); }
+
+/* Recomendación */
+.recommendation {
+  margin-top: 2.5rem;
+  background: var(--bg-surface-2);
+  border-left: 3px solid var(--accent-coral);
+  padding: 1.5rem 1.75rem;
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+}
+.recommendation__eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-coral);
+  font-weight: 600;
+  margin-bottom: 0.6rem;
+}
+.recommendation__text {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  line-height: 1.55;
+  color: var(--ink-primary);
+  font-style: italic;
+}
+
+/* ----------------------------------------------------------------
+   8. FOOTER
+---------------------------------------------------------------- */
+.site-footer {
+  border-top: 1px solid var(--ink-rule);
+  padding: 2rem 0 3rem;
+  background: var(--bg-surface);
+}
+.colophon {
+  font-size: 12px;
+  color: var(--ink-tertiary);
+  text-align: center;
+  font-style: italic;
+  max-width: 40em;
+  margin: 0 auto;
+  line-height: 1.6;
+}

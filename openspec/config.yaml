@@ -1,0 +1,53 @@
+schema: spec-driven
+
+context: |
+  Tech stack: Vanilla HTML/CSS/JS, no build step. Chart.js 4.4 via CDN, Google Fonts.
+  Architecture: 4-layer separation — calculator.js (pure math, IIFE), ui.js (DOM/format),
+  charts.js (Chart.js wrappers), app.js (orchestrator). Modules export via window.X.
+  Domain: financial calculator comparing buy-with-mortgage vs rent+invest in COP (Colombia).
+  Style: deliberate zero-dependency design documented in README.md & docs/ARCHITECTURE.md.
+
+strict_tdd: false  # No test runner detected — TDD cannot be enforced
+
+testing:
+  test_runner: none
+  layers:
+    unit: false
+    integration: false
+    e2e: false
+  coverage: false
+  linter: none
+  type_checker: none
+  formatter: none
+  notes: |
+    Project deliberately has no build step / test framework. Verification must be
+    manual: sanity-check math with known values from docs/FORMULAS.md §10
+    and visual smoke-test in a browser.
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+    - Identify affected modules across the 4 layers
+  specs:
+    - Use Given/When/Then format for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+  design:
+    - Document architecture decisions with rationale
+    - Respect 4-layer separation (calculator/ui/charts/app)
+    - Never break the contract of the result object returned by simulate()
+  tasks:
+    - Group tasks by phase (infrastructure, implementation, verification)
+    - Use hierarchical numbering (1.1, 1.2, etc.)
+    - Keep tasks small enough to complete in one session
+  apply:
+    - Follow existing IIFE module pattern with window.X exports
+    - Keep calculator.js DOM-free (pure math)
+    - Keep formatters centralized in ui.js (fmtCOP, fmtCOPCuota, fmtPct)
+    - Use INPUT_CONFIG declarative pattern when adding new sliders
+  verify:
+    - Sanity-check math with known values from docs/FORMULAS.md §10
+    - Visual smoke-test in browser (no automated UI tests possible)
+    - Confirm modo='diferencia' default still produces same numbers as before any change
+    - Compare implementation against every spec scenario
+  archive:
+    - Warn before merging destructive deltas (large removals)

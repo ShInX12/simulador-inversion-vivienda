@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>¿Comprar o arrendar + invertir? — Calculadora financiera Colombia</title>
+  <meta name="description" content="Calculadora interactiva para decidir entre comprar vivienda con hipoteca o arrendar e invertir, adaptada al mercado colombiano (FNA, banca comercial, VIS)." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Manrope:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles/main.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <h1 class="masthead__title">¿Comprar <em>o</em> arrendar + invertir?</h1>
+    </div>
+  </header>
+
+  <main class="container main-grid">
+
+    <aside class="panel panel--controls" data-mode="aporte-fijo">
+      <nav class="mode-tabs" data-mode="aporte-fijo" aria-label="Modo de inversión">
+        <button type="button" class="mode-tab is-active" data-mode-target="aporte-fijo" aria-pressed="true">Aporte fijo</button>
+        <button type="button" class="mode-tab" data-mode-target="diferencia" aria-pressed="false">Diferencia</button>
+      </nav>
+      <p class="mode-tabs__hint">
+        <strong>Aporte fijo:</strong> te comprometés con un monto mensual al ETF.
+        <strong>Diferencia:</strong> invertís lo que te ahorra arrendar vs comprar (modelo teórico).
+      </p>
+
+      <div class="presets">
+        <p class="panel__label">Configuración rápida</p>
+        <div class="presets__grid">
+          <button type="button" data-preset="joven-fna" class="preset-btn">
+            <span class="preset-btn__name">Joven FNA</span>
+            <span class="preset-btn__rate">8.8% · 30 años</span>
+          </button>
+          <button type="button" data-preset="banca" class="preset-btn">
+            <span class="preset-btn__name">Banca tradicional</span>
+            <span class="preset-btn__rate">12.5% · 30%</span>
+          </button>
+          <button type="button" data-preset="inversionista" class="preset-btn">
+            <span class="preset-btn__name">Inversionista</span>
+            <span class="preset-btn__rate">$400 USD/mes</span>
+          </button>
+          <button type="button" data-preset="conservador" class="preset-btn">
+            <span class="preset-btn__name">Conservador</span>
+            <span class="preset-btn__rate">supuestos cautos</span>
+          </button>
+        </div>
+      </div>
+
+      <section class="control-group">
+        <h2 class="control-group__title">Vivienda</h2>
+
+        <div class="control" data-control="precio">
+          <div class="control__head">
+            <label for="precio">Precio</label>
+            <output for="precio" id="precio-out">$250M</output>
+          </div>
+          <input type="range" id="precio" min="100" max="800" step="10" value="250" />
+          <p class="control__hint">Millones de pesos colombianos.</p>
+        </div>
+
+        <div class="control" data-control="ci">
+          <div class="control__head">
+            <label for="ci">Cuota inicial</label>
+            <output for="ci" id="ci-out">20% · $50M</output>
+          </div>
+          <input type="range" id="ci" min="0" max="40" step="1" value="20" />
+          <p class="control__hint">FNA No VIS pide 10% · FNA VIS desde 0% · Banca 20–30%.</p>
+        </div>
+
+        <div class="control" data-control="esc">
+          <div class="control__head">
+            <label for="esc">Costos de escrituración</label>
+            <output for="esc" id="esc-out">5.5%</output>
+          </div>
+          <input type="range" id="esc" min="0" max="10" step="0.5" value="5.5" />
+          <p class="control__hint">Notaría, registro, beneficencia. Típicamente 5–7%.</p>
+        </div>
+
+        <div class="control" data-control="apr">
+          <div class="control__head">
+            <label for="apr">Apreciación anual</label>
+            <output for="apr" id="apr-out">4.5%</output>
+          </div>
+          <input type="range" id="apr" min="0" max="10" step="0.5" value="4.5" />
+          <p class="control__hint">Conservador 3% · Promedio 4–5% · Premium 6%+.</p>
+        </div>
+
+        <div class="control" data-control="adm">
+          <div class="control__head">
+            <label for="adm">Admin/predial/seguros (comprar)</label>
+            <output for="adm" id="adm-out">$380k/mes</output>
+          </div>
+          <input type="range" id="adm" min="0" max="1500" step="20" value="380" />
+          <p class="control__hint">Mensual. Si el predial es anual, dividilo por 12 y sumalo acá.</p>
+        </div>
+      </section>
+
+      <section class="control-group">
+        <h2 class="control-group__title">Hipoteca</h2>
+
+        <div class="control" data-control="tasa">
+          <div class="control__head">
+            <label for="tasa">Tasa efectiva anual</label>
+            <output for="tasa" id="tasa-out">10%</output>
+          </div>
+          <input type="range" id="tasa" min="4" max="18" step="0.01" value="10" />
+          <p class="control__hint">FNA Generación −0.5pp · Banca 11–14%.</p>
+        </div>
+
+        <div class="control" data-control="plazo">
+          <div class="control__head">
+            <label for="plazo">Plazo</label>
+            <output for="plazo" id="plazo-out">20 años</output>
+          </div>
+          <input type="range" id="plazo" min="5" max="30" step="1" value="20" />
+          <p class="control__hint">Pesos: hasta 20 años · UVR: hasta 30 años.</p>
+        </div>
+
+        <div class="control" data-control="seguroVida">
+          <div class="control__head">
+            <label for="seguroVida">Seguro de vida (mensual)</label>
+            <output for="seguroVida" id="seguroVida-out">0.050% · $100,000/mes</output>
+          </div>
+          <input type="range" id="seguroVida" min="0" max="0.2" step="0.0001" value="0.05" />
+          <p class="control__hint">% del saldo pendiente. Baja a medida que pagás capital.</p>
+        </div>
+
+        <div class="control" data-control="seguroIncendio">
+          <div class="control__head">
+            <label for="seguroIncendio">Seguro de incendio (mensual)</label>
+            <output for="seguroIncendio" id="seguroIncendio-out">0.045% · $112,500/mes</output>
+          </div>
+          <input type="range" id="seguroIncendio" min="0" max="0.2" step="0.0001" value="0.045" />
+          <p class="control__hint">% del valor de la vivienda. Fijo (no baja con el saldo).</p>
+        </div>
+      </section>
+
+      <section class="control-group">
+        <h2 class="control-group__title">Arriendo</h2>
+
+        <div class="control" data-control="arr">
+          <div class="control__head">
+            <label for="arr">Arriendo equivalente</label>
+            <output for="arr" id="arr-out">$1.6M</output>
+          </div>
+          <input type="range" id="arr" min="0.5" max="6" step="0.1" value="1.6" />
+          <p class="control__hint">Lo que pagarías por una vivienda equivalente.</p>
+        </div>
+
+        <div class="control" data-control="ipc">
+          <div class="control__head">
+            <label for="ipc">Crecimiento anual</label>
+            <output for="ipc" id="ipc-out">5%</output>
+          </div>
+          <input type="range" id="ipc" min="0" max="12" step="0.5" value="5" />
+          <p class="control__hint">Por ley, no puede superar el IPC.</p>
+        </div>
+
+        <div class="control" data-control="admArr">
+          <div class="control__head">
+            <label for="admArr">Admin (arrendar)</label>
+            <output for="admArr" id="admArr-out">$190k/mes</output>
+          </div>
+          <input type="range" id="admArr" min="0" max="1500" step="20" value="190" />
+          <p class="control__hint">Mensual. Lo que paga el arrendatario (admin/servicios, sin predial ni seguro estructural).</p>
+        </div>
+      </section>
+
+      <section class="control-group">
+        <h2 class="control-group__title">Inversión alternativa</h2>
+
+        <div class="control" data-control="etf">
+          <div class="control__head">
+            <label for="etf">Retorno ETF en USD</label>
+            <output for="etf" id="etf-out">8%</output>
+          </div>
+          <input type="range" id="etf" min="0" max="18" step="0.5" value="8" />
+          <p class="control__hint">CSPX.L histórico ~10% USD nominal. 8% es conservador forward-looking.</p>
+        </div>
+
+        <div class="control" data-control="fxi">
+          <div class="control__head">
+            <label for="fxi">Tasa COP/USD inicial</label>
+            <output for="fxi" id="fxi-out">$4,200</output>
+          </div>
+          <input type="range" id="fxi" min="3000" max="6000" step="50" value="4200" />
+          <p class="control__hint">Cotización al día cero. Histórico reciente: $4,000–$4,500.</p>
+        </div>
+
+        <div class="control" data-control="dev">
+          <div class="control__head">
+            <label for="dev">Devaluación anual COP/USD</label>
+            <output for="dev" id="dev-out">3.0%</output>
+          </div>
+          <input type="range" id="dev" min="0" max="8" step="0.25" value="3" />
+          <p class="control__hint">Promedio histórico colombiano ~3-4% anual.</p>
+        </div>
+
+        <div class="control" data-control="aporte" data-mode-only="aporte-fijo">
+          <div class="control__head">
+            <label for="aporte">Aporte mensual al ETF (USD)</label>
+            <output for="aporte" id="aporte-out">$250</output>
+          </div>
+          <input type="range" id="aporte" min="0" max="1000" step="10" value="250" />
+          <p class="control__hint">Cuánto te comprometés a invertir cada mes en USD.</p>
+        </div>
+
+        <div class="control" data-control="incr" data-mode-only="aporte-fijo">
+          <div class="control__head">
+            <label for="incr">Aumento anual del aporte</label>
+            <output for="incr" id="incr-out">8%</output>
+          </div>
+          <input type="range" id="incr" min="0" max="20" step="0.5" value="8" />
+          <p class="control__hint">Sube cada 12 meses (refleja ajuste salarial).</p>
+        </div>
+
+        <label class="toggle">
+          <input type="checkbox" id="cashtoggle" checked />
+          <span class="toggle__label">Invertir cuota inicial en el ETF al inicio</span>
+        </label>
+      </section>
+
+      <section class="control-group">
+        <h2 class="control-group__title">Impuestos y costos al cierre</h2>
+
+        <label class="toggle">
+          <input type="checkbox" id="aplicarImpuestosToggle" />
+          <span class="toggle__label">Aplicar impuestos al cierre del plazo</span>
+        </label>
+
+        <div class="control" data-control="tarifaRenta">
+          <div class="control__head">
+            <label for="tarifaRenta">Tarifa marginal de renta</label>
+            <output for="tarifaRenta" id="tarifaRenta-out">33%</output>
+          </div>
+          <input type="range" id="tarifaRenta" min="0" max="40" step="1" value="33" />
+          <p class="control__hint">Tu tarifa marginal de renta. Aplica al rendimiento del ETF al liquidar y al refund AFC.</p>
+        </div>
+
+        <div class="control" data-control="tarifaGanancia">
+          <div class="control__head">
+            <label for="tarifaGanancia">Ganancia ocasional vivienda</label>
+            <output for="tarifaGanancia" id="tarifaGanancia-out">10%</output>
+          </div>
+          <input type="range" id="tarifaGanancia" min="0" max="20" step="1" value="10" />
+          <p class="control__hint">10% sobre la utilidad al vender vivienda (estándar Colombia).</p>
+        </div>
+
+        <div class="control" data-control="costoVenta">
+          <div class="control__head">
+            <label for="costoVenta">Costos de venta</label>
+            <output for="costoVenta" id="costoVenta-out">5.0%</output>
+          </div>
+          <input type="range" id="costoVenta" min="0" max="10" step="0.5" value="5" />
+          <p class="control__hint">Comisión inmobiliaria (~3%) + legales. Típico 5%.</p>
+        </div>
+
+        <label class="toggle">
+          <input type="checkbox" id="viviendaPrimeraToggle" checked />
+          <span class="toggle__label">Vivienda primera (exención 7,500 UVT)</span>
+        </label>
+
+        <div class="control" data-control="aporteAfc">
+          <div class="control__head">
+            <label for="aporteAfc">Aporte AFC mensual</label>
+            <output for="aporteAfc" id="aporteAfc-out">$0k</output>
+          </div>
+          <input type="range" id="aporteAfc" min="0" max="3000" step="50" value="0" />
+          <p class="control__hint">Aporte mensual a AFC. 0 = no aplico el beneficio. Refund anual va al ETF.</p>
+        </div>
+      </section>
+
+      <section class="control-group">
+        <h2 class="control-group__title">Tu salario</h2>
+
+        <div class="control" data-control="salario">
+          <div class="control__head">
+            <label for="salario">Salario mensual</label>
+            <output for="salario" id="salario-out">$5.00M</output>
+          </div>
+          <input type="range" id="salario" min="1" max="30" step="0.25" value="5" />
+          <p class="control__hint">Para ver cuánto pesan la cuota y el arriendo sobre tu ingreso.</p>
+        </div>
+
+        <div class="control" data-control="crecSal">
+          <div class="control__head">
+            <label for="crecSal">Crecimiento anual del salario</label>
+            <output for="crecSal" id="crecSal-out">5.0%</output>
+          </div>
+          <input type="range" id="crecSal" min="0" max="15" step="0.5" value="5" />
+          <p class="control__hint">Si crece igual que el IPC, la carga del arriendo se mantiene; la cuota fija se aligera.</p>
+        </div>
+      </section>
+
+      <button type="button" id="reset-btn" class="reset-btn">Restablecer valores</button>
+    </aside>
+
+    <section class="panel panel--results">
+
+      <div class="verdict" id="verdict">
+        <p class="verdict__label">¿Qué te conviene?</p>
+        <div class="verdict__compare">
+          <div class="verdict__side verdict__side--compra">
+            <span class="verdict__name">Comprar</span>
+            <span class="verdict__val" id="v-compra">$603M</span>
+          </div>
+          <div class="verdict__side verdict__side--arr">
+            <span class="verdict__name">Arrendar + ETF</span>
+            <span class="verdict__val" id="v-arr">$451M</span>
+          </div>
+        </div>
+        <div class="verdict__bar">
+          <div class="verdict__bar-seg verdict__bar-seg--compra" id="v-bar-compra"></div>
+          <div class="verdict__bar-seg verdict__bar-seg--arr" id="v-bar-arr"></div>
+        </div>
+        <p class="verdict__result" id="v-result">Gana comprar por $152M (post-tax)</p>
+      </div>
+
+      <div class="scorecard">
+        <article class="scorecard__col">
+          <h3 class="scorecard__head">Comprar</h3>
+          <div class="scorecard__row">
+            <span class="scorecard__k">Patrimonio final</span>
+            <span class="scorecard__v" id="sc-compra-patrimonio">$603M</span>
+          </div>
+          <div class="scorecard__row">
+            <span class="scorecard__k">Plata perdida</span>
+            <span class="scorecard__v" id="sc-compra-perdida">$445M</span>
+          </div>
+          <div class="scorecard__row">
+            <span class="scorecard__k">Entrada</span>
+            <span class="scorecard__v" id="sc-compra-entrada">$39M</span>
+          </div>
+          <div class="scorecard__row">
+            <span class="scorecard__k">Mensual inicial</span>
+            <span class="scorecard__v" id="sc-compra-mensual">$2.11M</span>
+          </div>
+        </article>
+        <article class="scorecard__col">
+          <h3 class="scorecard__head">Arrendar + ETF</h3>
+          <div class="scorecard__row">
+            <span class="scorecard__k">Patrimonio final</span>
+            <span class="scorecard__v" id="sc-arr-patrimonio">$451M</span>
+          </div>
+          <div class="scorecard__row">
+            <span class="scorecard__k">Plata perdida</span>
+            <span class="scorecard__v" id="sc-arr-perdida">$710M</span>
+          </div>
+          <div class="scorecard__row">
+            <span class="scorecard__k">Entrada</span>
+            <span class="scorecard__v" id="sc-arr-entrada">$0</span>
+          </div>
+          <div class="scorecard__row">
+            <span class="scorecard__k">Mensual inicial</span>
+            <span class="scorecard__v" id="sc-arr-mensual">$1.60M</span>
+          </div>
+        </article>
+      </div>
+
+      <div class="details-strip">
+        <span class="details-strip__item">Intereses al banco <strong id="d-int">$281M</strong></span>
+        <span class="details-strip__item">ETF final <strong id="d-etf-usd">$0</strong></span>
+        <span class="details-strip__item">Arriendo &gt; cuota <strong id="d-cruce">Año 9</strong></span>
+        <span class="details-strip__item">Cruce patrimonio <strong id="d-cruce-pat">Nunca</strong></span>
+        <span class="details-strip__item">Cruce gasto <strong id="d-cruce-gasto">Nunca</strong></span>
+      </div>
+
+      <aside class="goalseek">
+        <p class="goalseek__eyebrow">Sensibilidad</p>
+        <p class="goalseek__header" id="gs-header"></p>
+        <ul class="goalseek__list" id="gs-list"></ul>
+      </aside>
+
+      <details class="schedule" id="schedule-details">
+        <summary class="schedule__summary">Ver plan de pagos (mes a mes)</summary>
+        <div class="schedule__actions">
+          <button type="button" id="schedule-csv" class="schedule__csv">Exportar CSV</button>
+        </div>
+        <div class="schedule__wrap">
+          <table class="schedule__table">
+            <thead>
+              <tr>
+                <th>Mes</th><th>Interés</th><th>Capital</th><th>Cuota</th>
+                <th>Seg. vida</th><th>Seg. incendio</th><th>Cuota + seguros</th><th>Saldo</th>
+              </tr>
+            </thead>
+            <tbody id="schedule-body"></tbody>
+            <tfoot id="schedule-foot"></tfoot>
+          </table>
+        </div>
+      </details>
+
+      <figure class="chart-figure chart-figure--main">
+        <figcaption>
+          <p class="chart__eyebrow">Patrimonio neto</p>
+          <h3 class="chart__title">Cómo evoluciona tu riqueza</h3>
+          <div class="legend">
+            <span class="legend__item"><span class="swatch swatch--green"></span>Compra (equity vivienda)</span>
+            <span class="legend__item"><span class="swatch swatch--blue swatch--dashed"></span>Arriendo + ETF</span>
+          </div>
+        </figcaption>
+        <div class="chart-wrap chart-wrap--tall">
+          <canvas id="cMain" role="img" aria-label="Patrimonio en compra vs arrendar a lo largo del tiempo"></canvas>
+        </div>
+      </figure>
+
+      <div class="chart-row">
+        <figure class="chart-figure">
+          <figcaption>
+            <p class="chart__eyebrow">Composición del pago anual</p>
+            <h3 class="chart__title">Intereses vs capital</h3>
+            <div class="legend">
+              <span class="legend__item"><span class="swatch swatch--coral"></span>Intereses</span>
+              <span class="legend__item"><span class="swatch swatch--green"></span>Capital</span>
+            </div>
+          </figcaption>
+          <div class="chart-wrap">
+            <canvas id="cAmort" role="img" aria-label="Composición del pago anual entre intereses y capital"></canvas>
+          </div>
+        </figure>
+
+        <figure class="chart-figure">
+          <figcaption>
+            <p class="chart__eyebrow">Costo mensual total</p>
+            <h3 class="chart__title">Comprar vs arrendar</h3>
+            <div class="legend">
+              <span class="legend__item"><span class="swatch swatch--green"></span>Comprar (cuota + admin)</span>
+              <span class="legend__item"><span class="swatch swatch--navy swatch--dashed"></span>Arrendar (arriendo + admin parcial)</span>
+            </div>
+          </figcaption>
+          <div class="chart-wrap">
+            <canvas id="cRent" role="img" aria-label="Costo mensual total: comprar vs arrendar"></canvas>
+          </div>
+        </figure>
+      </div>
+
+      <figure class="chart-figure">
+        <figcaption>
+          <p class="chart__eyebrow">Gasto no recuperable</p>
+          <h3 class="chart__title">Plata perdida en cada escenario</h3>
+          <div class="legend">
+            <span class="legend__item"><span class="swatch swatch--green"></span>Comprar (intereses + admin + escrituración)</span>
+            <span class="legend__item"><span class="swatch swatch--navy swatch--dashed"></span>Arrendar (arriendo + admin parcial)</span>
+          </div>
+        </figcaption>
+        <div class="chart-wrap chart-wrap--tall">
+          <canvas id="cGasto" role="img" aria-label="Plata perdida en compra vs arriendo a lo largo del tiempo"></canvas>
+        </div>
+      </figure>
+
+      <figure class="chart-figure">
+        <figcaption>
+          <p class="chart__eyebrow">Aporte al ETF</p>
+          <h3 class="chart__title">Cuánto inviertes en el ETF cada año</h3>
+          <div class="legend">
+            <span class="legend__item"><span class="swatch swatch--blue"></span>Aporte anual (USD)</span>
+          </div>
+        </figcaption>
+        <div class="chart-wrap">
+          <canvas id="cAporte" role="img" aria-label="Aporte anual al ETF en USD por año"></canvas>
+        </div>
+      </figure>
+
+      <figure class="chart-figure">
+        <figcaption>
+          <p class="chart__eyebrow">El poder del interés compuesto</p>
+          <h3 class="chart__title">Interés compuesto generado por el ETF (USD)</h3>
+          <div class="legend">
+            <span class="legend__item"><span class="swatch swatch--navy"></span>Valor con interés compuesto</span>
+            <span class="legend__item"><span class="swatch swatch--amber"></span>Aportes acumulados (sin interés)</span>
+          </div>
+        </figcaption>
+        <div class="chart-wrap chart-wrap--tall">
+          <canvas id="cCompound" role="img" aria-label="Valor del ETF con interés compuesto vs aportes acumulados sin crecimiento, en USD"></canvas>
+        </div>
+      </figure>
+
+      <figure class="chart-figure">
+        <figcaption>
+          <p class="chart__eyebrow">Carga financiera</p>
+          <h3 class="chart__title">Cuánto pesa en tu salario</h3>
+          <div class="legend">
+            <span class="legend__item"><span class="swatch swatch--green"></span>Comprar (% del salario)</span>
+            <span class="legend__item"><span class="swatch swatch--navy swatch--dashed"></span>Arrendar (% del salario)</span>
+          </div>
+        </figcaption>
+        <div class="chart-wrap">
+          <canvas id="cCarga" role="img" aria-label="Carga financiera: costo mensual como porcentaje del salario"></canvas>
+        </div>
+      </figure>
+
+      <aside class="recommendation" id="recomendacion">
+        <p class="recommendation__eyebrow">Lectura del escenario</p>
+        <p class="recommendation__text" id="recomendacion-texto">
+          Ajusta los controles para ver una lectura automática del escenario.
+        </p>
+      </aside>
+
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p class="colophon">
+        Calculadora educativa. No es asesoría financiera.
+        Los resultados dependen de los supuestos que ingreses — verifica
+        con un asesor profesional antes de decidir.
+      </p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
