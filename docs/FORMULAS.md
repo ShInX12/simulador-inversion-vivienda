@@ -351,6 +351,8 @@ El toggle permite comparar las dos lecturas — la realista (post-tax) y la teó
 | `anio` | Número de año (0 a plazoAnios) | eje X de todas |
 | `equity` | Equity de la vivienda en COP (`valor − saldo`) | Patrimonio |
 | `etf` | Valor del ETF en COP equivalente (`etfUsd × tasa_m`) | Patrimonio |
+| `etfValorUsd` | Valor del portafolio en USD **con** interés compuesto (incluye el crecimiento del ETF) | Interés compuesto |
+| `aportadoAcumUsd` | Plata aportada acumulada en USD **sin** crecimiento (cost basis: seed inicial + aportes mensuales) | Interés compuesto |
 | `cuota` | Cuota mensual fija (constante) | — |
 | `arriendoEq` | Arriendo mensual de ese año (crece con IPC) | — |
 | `costoCompraMes` | Costo mensual de comprar: `cuota + admin` | Costo mensual |
@@ -366,6 +368,13 @@ El toggle permite comparar las dos lecturas — la realista (post-tax) y la teó
 | `capAnio` | Capital amortizado en ese año | Composición del pago |
 
 **Nota sobre el timing**: los campos que dependen de valores que crecen con IPC (costoCompraMes, costoArriendoMes, cargaCompraPct, cargaArriendoPct) usan el valor del mes del snapshot **después** del ajuste por inflación de ese mes — por eso el salario también se ajusta en el mismo punto del loop, manteniendo la consistencia temporal.
+
+**Las dos series de interés compuesto** (`etfValorUsd` y `aportadoAcumUsd`) alimentan el gráfico "Interés compuesto generado por el ETF". Ambas están en USD para aislar el efecto del compounding del ruido del FX:
+
+- `aportadoAcumUsd` es el **cost basis**: solo suma lo que efectivamente metiste al ETF (el seed inicial si `invertirCashInicial` está ON, más cada aporte mensual). No crece solo — es una línea de "cuánta plata pusiste".
+- `etfValorUsd` es el **valor de mercado**: arranca igual que el aportado, pero cada mes compone con `(1 + retornoEtfUsd_m)` aplicado al saldo total (capital + ganancias previas).
+
+La **brecha vertical entre ambas líneas es el interés compuesto generado** (`etfValorUsd − aportadoAcumUsd`): la plata que el portafolio creó sola, sin que aportaras nada. Esa brecha se ensancha exponencialmente con el tiempo — el punto visual del gráfico.
 
 ---
 

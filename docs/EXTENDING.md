@@ -14,7 +14,9 @@ Recetas concretas para tareas comunes. Cada una se puede pegar en una conversaci
 6. [Soportar tasas en UVR](#6-soportar-tasas-en-uvr)
 7. [Persistir la configuración del usuario](#7-persistir-la-configuración-del-usuario)
 8. [Exportar el resultado a PDF o Excel](#8-exportar-el-resultado-a-pdf-o-excel)
-9. [Cómo trabajar con Claude para extender](#9-cómo-trabajar-con-claude-para-extender)
+9. [Trabajar con el plan de pagos (amortización)](#9-trabajar-con-el-plan-de-pagos-amortización)
+10. [Análisis de sensibilidad (goal seek y breakevens)](#10-análisis-de-sensibilidad-goal-seek-y-breakevens)
+11. [Cómo trabajar con Claude para extender](#11-cómo-trabajar-con-claude-para-extender)
 
 ---
 
@@ -69,6 +71,8 @@ function simulate(input) {
   }
 }
 ```
+
+> **Nota sobre el admin (ya está dividido):** el modelo NO usa un solo admin. Maneja **dos variables independientes** — `adminInicial` (admin + predial del COMPRADOR) y `adminArriendoInicial` (admin que paga el ARRENDATARIO, default $190k, sin predial ni seguro estructural). En el loop, `admin` alimenta el costo de comprar y `adminArriendo` el de arrendar; cada una crece con el IPC por su lado. Si agregás una variable que afecte solo a uno de los dos escenarios, seguí ese mismo patrón de pares separados en vez de reusar una sola.
 
 ### d) Listo
 
@@ -323,7 +327,83 @@ function exportarCSV(result) {
 
 ---
 
-## 9. Cómo trabajar con Claude para extender
+## 9. Trabajar con el plan de pagos (amortización)
+
+`calculator.js` exporta dos funciones para el plan de pagos del banco, **independientes de `simulate()`** — solo cubren la hipoteca + seguros, no el ETF.
+
+### `amortizationSchedule(input)`
+
+Recibe los mismos inputs que `simulate()` (usa `precio`, `cuotaInicialPct`, `tasaEA`, `plazoAnios`, `seguroVidaPct`, `seguroIncendioPct`) y devuelve un array con una fila **por mes** (`plazoAnios × 12` filas):
+
+```javascript
+import { amortizationSchedule } from './js/calculator.js';
+
+const plan = amortizationSchedule(input);
+// plan[0] = {
+//   mes: 1,
+//   cuota,            // cuota fija del sistema francés (constante)
+//   interes,          // saldo × tasaMensual
+//   capital,          // cuota − interes
+//   seguroVida,       // saldo × seguroVidaPct/100 (decrece con el saldo)
+//   seguroIncendio,   // precio × seguroIncendioPct/100 (fijo)
+//   cuotaTotal,       // cuota + seguroVida + seguroIncendio
+//   saldo             // saldo pendiente al cierre del mes (≥ 0)
+// }
+```
+
+### `scheduleTotals(schedule)`
+
+Recibe la salida de `amortizationSchedule()` y suma cada columna a lo largo de todo el plazo:
+
+```javascript
+import { scheduleTotals } from './js/calculator.js';
+
+const totales = scheduleTotals(plan);
+// { interes, capital, cuota, seguroVida, seguroIncendio, cuotaTotal }
+```
+
+Útil para mostrar "cuánto pagás en total al banco" o "cuánto se va solo en intereses+seguros". Para una tabla en la UI, conviene agrupar las 240+ filas por año (sumando los 12 meses de cada uno) antes de renderizar.
+
+---
+
+## 10. Análisis de sensibilidad (goal seek y breakevens)
+
+Responden la pregunta inversa: **¿en qué valor de una palanca cambia el resultado?** Ambas viven en `calculator.js`.
+
+### `goalSeek(input, key, min, max)`
+
+Busca, por bisección, el valor de la variable `key` que hace que `simulate(...).diferencia` cruce cero (el punto donde empata comprar vs arrendar):
+
+```javascript
+import { goalSeek } from './js/calculator.js';
+
+// ¿Con qué retorno del ETF empatan los dos escenarios?
+const umbral = goalSeek(input, 'retornoEtfUsdPct', 0, 18);
+// → número (el valor de cruce) o null si no hay cruce en [min, max]
+```
+
+Hace hasta 50 iteraciones con tolerancia `1e-6`. Devuelve `null` cuando los extremos `min` y `max` no encierran un cruce (mismo signo de diferencia en ambos), así que **siempre validá contra `null`** antes de usar el resultado.
+
+### `breakevens(input)`
+
+Corre `goalSeek` sobre las palancas relevantes según el modo (`input.modo`) y devuelve los puntos de quiebre de cada una:
+
+```javascript
+import { breakevens } from './js/calculator.js';
+
+const puntos = breakevens(input);
+// [
+//   { key: 'tasaEA',           umbral: 11.2,  actual: 10 },
+//   { key: 'retornoEtfUsdPct', umbral: 7.4,   actual: 8 },
+//   ...
+// ]   // umbral puede ser null si esa palanca no cruza en su rango
+```
+
+Cada entrada trae `key` (la variable), `umbral` (valor de cruce o `null`) y `actual` (el valor actual del input). Para agregar una palanca nueva al análisis, sumala a `BREAKEVEN_VARS` en `calculator.js` con su `key`, `min`, `max` y los `modes` en que aplica.
+
+---
+
+## 11. Cómo trabajar con Claude para extender
 
 Esta calculadora está diseñada para que sea fácil iterarla con un asistente de IA. Algunos consejos:
 

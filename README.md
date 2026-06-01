@@ -41,7 +41,7 @@ La decisión de no usar React/Vue/build tools en producción es deliberada: cual
 
 ## Cómo correr los tests
 
-Los tests cubren la matemática pura de `calculator.js` (todas las funciones + las dos capabilities especificadas), los formatters de `ui.js`, regression guards de bugs ya cazados, y la lógica de impuestos. Hay **58 tests**, corren en menos de medio segundo.
+Los tests cubren la matemática pura de `calculator.js` (todas las funciones + las dos capabilities especificadas), los formatters de `ui.js`, regression guards de bugs ya cazados, y la lógica de impuestos. Hay **106 tests** en 15 archivos, corren en menos de medio segundo.
 
 ```bash
 # Una vez (solo la primera vez):
@@ -70,12 +70,22 @@ calculadora-vivienda/
 │   ├── ui.js               # Lectura de inputs, formato, actualización del DOM (ESM)
 │   ├── charts.js           # Setup y actualización de Chart.js (ESM)
 │   └── app.js              # Entry point: conecta todo (ESM)
-├── tests/
-│   ├── calculator.test.js          # simulate() + utility functions (25 tests)
-│   ├── formatters.test.js          # fmtCOP, fmtCOPCuota, fmtPct, fmtUSD (16 tests)
-│   ├── crossover-bug.test.js       # Regression guard del cost-crossover (3 tests)
-│   ├── tax-model.test.js           # Modelo de impuestos + AFC (11 tests)
-│   └── crossover-metrics.test.js   # Patrimonio crossover (3 tests)
+├── tests/                          # 106 tests en 15 archivos
+│   ├── admin-split.test.js         # Split de admin comprador vs arrendatario
+│   ├── calculator.test.js          # simulate() + utility functions
+│   ├── compound-interest.test.js   # Series de interés compuesto del ETF
+│   ├── contribution.test.js        # Aporte mensual y step-up anual
+│   ├── crossover-bug.test.js       # Regression guard del cost-crossover
+│   ├── crossover-metrics.test.js   # Patrimonio crossover
+│   ├── formatters.test.js          # fmtCOP, fmtCOPCuota, fmtPct, fmtUSD
+│   ├── goal-seek.test.js           # goalSeek() y breakevens()
+│   ├── insurance.test.js           # Seguros de vida e incendio
+│   ├── presets.test.js             # Presets de escenario
+│   ├── salary-burden.test.js       # Carga financiera sobre el salario
+│   ├── schedule.test.js            # amortizationSchedule() y scheduleTotals()
+│   ├── scorecard.test.js           # Métricas del scorecard
+│   ├── spending.test.js            # Gasto no recuperable acumulado
+│   └── tax-model.test.js           # Modelo de impuestos + AFC
 ├── docs/
 │   ├── ARCHITECTURE.md     # Cómo se conectan los módulos y por qué
 │   ├── EXTENDING.md        # Cómo agregar variables, charts, presets
@@ -195,14 +205,15 @@ Datos de apoyo de un solo lado o de timing: **Intereses al banco**, **ETF final 
 
 (Los tres cruces son conceptualmente distintos — ver §7 y §13 de `FORMULAS.md`.)
 
-Más seis gráficos:
+Más siete gráficos:
 
 1. **Patrimonio neto a lo largo del tiempo** (`Cómo evoluciona tu riqueza`) — equity de la vivienda vs ETF en COP. La línea principal.
 2. **Composición del pago anual** — cuánto va a intereses vs capital cada año.
 3. **Costo mensual: comprar vs arrendar** — cuota + admin vs arriendo + admin parcial; cuándo se cruzan.
 4. **Plata perdida en cada escenario** — gasto NO recuperable acumulado (comprar: intereses + admin + escrituración; arrendar: arriendo + admin parcial), con marcador del cruce. No cuenta el capital ni la cuota inicial, que sí son recuperables al vender.
 5. **Aporte anual al ETF (USD)** — cuánto inviertes al ETF cada año; barras escalonadas en modo "Aporte fijo", variables en "Diferencia". El tooltip muestra el anual y el mensual.
-6. **Carga financiera (% del salario)** — costo mensual total de comprar vs arrendar como porcentaje de tu salario a lo largo del tiempo. Muestra cómo la cuota fija se aligera si tu salario crece.
+6. **Interés compuesto generado por el ETF (USD)** — dos líneas: el valor del portafolio con interés compuesto vs los aportes acumulados sin crecimiento. La brecha entre ambas es el interés compuesto generado.
+7. **Carga financiera (% del salario)** — costo mensual total de comprar vs arrendar como porcentaje de tu salario a lo largo del tiempo. Muestra cómo la cuota fija se aligera si tu salario crece.
 
 ---
 
@@ -214,7 +225,6 @@ Son **escenarios** que configuran varias variables coherentes de una vez (no sol
 |---|---|
 | **Joven FNA** | Tasa 8.8% · cuota inicial 10% · plazo 30 años (afiliado FNA, plazo largo) |
 | **Banca tradicional** | Tasa 12.5% · cuota inicial 30% · plazo 20 años |
-| **VIS primera vivienda** | Tasa 7.3% · cuota inicial 0% · precio $215M · plazo 30 años |
 | **Inversionista disciplinado** | Modo "Aporte fijo" · aporte $400 USD/mes · aumento 10% · retorno ETF 9% |
 | **Conservador** | Apreciación 3% · retorno ETF 6% · devaluación 2% (supuestos cautos) |
 

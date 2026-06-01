@@ -125,7 +125,9 @@ Es el "contrato" entre `calculator.js` y todo lo demás. Su forma es estable; si
   totalIntereses: 281000000,
   yearly: [
     // Cada snapshot anual. Ver §13 de FORMULAS.md para todos los campos.
-    { anio: 0, equity: 0, etf: 39000000, cuota, arriendoEq,
+    { anio: 0, equity: 0, etf: 39000000,
+      etfValorUsd, aportadoAcumUsd,               // valor USD con interés compuesto vs aportes acum. sin crecimiento (chart Interés compuesto)
+      cuota, arriendoEq,
       costoCompraMes, costoArriendoMes,           // costo mensual total (cuota+admin / arriendo+admin)
       gastoCompraSunkAcum, gastoArriendoAcum,      // gasto NO recuperable acumulado (chart Plata perdida)
       aporteAnualUsd,                              // aporte mensual al ETF sumado en el año (chart Aporte ETF)
@@ -182,15 +184,25 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () 
 
 ## Tests
 
-El proyecto tiene **58 tests automatizados** con Vitest, organizados en `tests/`. Corren en menos de medio segundo.
+El proyecto tiene **106 tests automatizados** con Vitest, organizados en 15 archivos bajo `tests/`. Corren en menos de medio segundo.
 
 ```
 tests/
-├── calculator.test.js          # simulate() + utility functions (25 tests, incluye 14 spec scenarios de etf-investment-mode)
-├── formatters.test.js          # fmtCOP, fmtCOPCuota, fmtPct, fmtUSD (16 tests)
-├── crossover-bug.test.js       # Regression guard del cost-crossover bug (3 tests)
-├── tax-model.test.js           # Modelo de impuestos + AFC (11 tests, capability tax-and-exit-cost-model)
-└── crossover-metrics.test.js   # Patrimonio crossover (3 tests)
+├── admin-split.test.js         # Split de admin comprador vs arrendatario
+├── calculator.test.js          # simulate() + utility functions (incluye spec scenarios de etf-investment-mode)
+├── compound-interest.test.js   # Series de interés compuesto del ETF (etfValorUsd / aportadoAcumUsd)
+├── contribution.test.js        # Aporte mensual al ETF y step-up anual
+├── crossover-bug.test.js       # Regression guard del cost-crossover bug
+├── crossover-metrics.test.js   # Patrimonio crossover
+├── formatters.test.js          # fmtCOP, fmtCOPCuota, fmtPct, fmtUSD
+├── goal-seek.test.js           # goalSeek() y breakevens()
+├── insurance.test.js           # Seguros de vida (saldo) e incendio (valor)
+├── presets.test.js             # Presets de escenario
+├── salary-burden.test.js       # Carga financiera sobre el salario
+├── schedule.test.js            # amortizationSchedule() y scheduleTotals()
+├── scorecard.test.js           # Métricas del scorecard
+├── spending.test.js            # Gasto no recuperable acumulado
+└── tax-model.test.js           # Modelo de impuestos + AFC (capability tax-and-exit-cost-model)
 ```
 
 ### Workflow TDD

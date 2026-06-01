@@ -27,4 +27,7 @@ desktop.ini
 *.swp
 *.swo
 
+# Paquetes / binarios sueltos (ej. instalador de Git Credential Manager bajado en WSL)
+*.deb
+
 # NOTA: openspec/ y .atl/ SÍ se versionan (decisión del equipo)
